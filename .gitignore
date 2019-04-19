@@ -1,4 +1,6 @@
 build/
+out/
 .idea
 .gradle
 .kotlintest
+*.iml

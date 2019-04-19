@@ -1,5 +1,10 @@
 package ale7canna.randomhost
 
-class HostList {
-    fun drawHost(): String = "no host"
+class HostList(val hostList: List<IHost>) {
+
+    fun drawHost(): IHost =
+            when (hostList.count()) {
+                0 -> NoHost()
+                else -> hostList.first()
+            }
 }
