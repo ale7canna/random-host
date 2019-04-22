@@ -2,6 +2,7 @@ import ale7canna.randomhost.Host
 import ale7canna.randomhost.HostList
 import ale7canna.randomhost.IRandomize
 import ale7canna.randomhost.Meeting
+import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.should
 import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
@@ -33,6 +34,17 @@ class MeetingTest : StringSpec() {
             val localSut = Meeting(HostList(random, emptyList()))
 
             shouldThrow<Exception> { localSut.appointHost() }
+        }
+
+        "Can add a participant to a Meeting" {
+            val hostToAdd = Host("new host name", "new host surname", true)
+            val slotList = slot<List<Host>>()
+            every { random.draw(capture(slotList)) } answers {slotList.captured.first()}
+
+            val meetingWithNewHost = sut.addHost(hostToAdd)
+            meetingWithNewHost.appointHost()
+
+            slotList.captured shouldContain Host("new host name", "new host surname", true)
         }
     }
 }

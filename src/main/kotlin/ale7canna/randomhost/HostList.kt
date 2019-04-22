@@ -7,4 +7,6 @@ class HostList(private val randomize: IRandomize, private val hostList: List<Hos
             0 -> NoHost()
             else -> randomize.draw(hostList.filter { it.present })
         }
+
+    fun add(hostToAdd: Host): HostList = HostList(randomize, hostList + hostToAdd)
 }

@@ -6,4 +6,5 @@ class Meeting(private val hostList: HostList) {
         else -> host as Host
     }
 
+    fun addHost(hostToAdd: Host): Meeting = Meeting(hostList.add(hostToAdd))
 }
