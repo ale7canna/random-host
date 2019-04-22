@@ -46,13 +46,13 @@ class HostListTest : StringSpec() {
             calledList.captured.filter { !it.present } shouldBe emptyList()
         }
     }
+}
 
-    private fun defaultHostList(): List<Host> {
-        return listOf(
-            Host("name1", "surname1"),
-            Host("name2", "surname2"),
-            Host("name3", "surname3"),
-            Host("name4", "surname4")
-        )
-    }
+internal fun defaultHostList(): List<Host> {
+    return listOf(
+        Host("name1", "surname1"),
+        Host("name2", "surname2"),
+        Host("name3", "surname3"),
+        Host("name4", "surname4")
+    )
 }
