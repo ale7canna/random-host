@@ -6,24 +6,24 @@ import io.mockk.*
 
 class HostListTest : StringSpec() {
     init {
-        val random = mockk<IRandomize>()
         val slot = slot<List<IHost>>()
+        val random = mockk<IRandomize>()
         every { random.draw(list = capture(slot)) } answers { slot.captured.first() }
 
         val sut = HostList(random, defaultHostList())
 
         "Empty list should return no host" {
-            val hostList = HostList(random, emptyList())
+            val localSut = HostList(random, emptyList())
 
-            val result = hostList.drawHost()
+            val result = localSut.drawHost()
 
             result.shouldBeTypeOf<NoHost>()
         }
 
         "List should return an host" {
-            val hostList = HostList(random, listOf(Host("name", "surname")))
+            val localSut = HostList(random, listOf(Host("name", "surname")))
 
-            val result = hostList.drawHost()
+            val result = localSut.drawHost()
 
             result shouldBe Host("name", "surname")
         }
@@ -34,9 +34,20 @@ class HostListTest : StringSpec() {
             verify { random.draw(any()) }
             confirmVerified(random)
         }
+
+        "Absent host can't be extracted" {
+            val list = defaultHostList() + Host("ciao", "ciao", false)
+            val localSut = HostList(random, list)
+            val calledList = slot<List<Host>>()
+            every { random.draw(capture(calledList)) } answers { calledList.captured.first() }
+
+            localSut.drawHost()
+
+            calledList.captured.filter { !it.present } shouldBe emptyList()
+        }
     }
 
-    private fun defaultHostList(): List<IHost> {
+    private fun defaultHostList(): List<Host> {
         return listOf(
             Host("name1", "surname1"),
             Host("name2", "surname2"),
