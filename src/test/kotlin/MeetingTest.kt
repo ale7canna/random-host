@@ -16,8 +16,8 @@ class MeetingTest : StringSpec() {
 
     init {
         val random: IRandomize = mockk()
-        val slotList = slot<List<Host>>()
-        every { random.draw(capture(slotList)) } answers { slotList.captured.first() }
+        val extractionList = slot<List<Host>>()
+        every { random.draw(capture(extractionList)) } answers { extractionList.captured.first() }
 
         val hostList = HostList(random, defaultHostList())
         val sut = Meeting(hostList)
@@ -39,25 +39,20 @@ class MeetingTest : StringSpec() {
 
         "Can add a participant to a Meeting" {
             val hostToAdd = Host("new host name", "new host surname", true)
-            val list = slot<List<Host>>()
-            every { random.draw(capture(list)) } answers {list.captured.first()}
 
             val meetingWithNewHost = sut.addHost(hostToAdd)
             meetingWithNewHost.appointHost()
 
-            list.captured shouldContain Host("new host name", "new host surname", true)
+            extractionList.captured shouldContain hostToAdd
         }
 
         "Meeting can have an absent participant" {
             val absentHost = Host("absent", "host", present = false)
             val meetingWithAbsentHost = sut.addHost(absentHost)
 
-            val availableHosts = slot<List<Host>>()
-            every { random.draw(capture(availableHosts)) } answers { availableHosts.captured.first() }
-
             meetingWithAbsentHost.appointHost()
 
-            availableHosts.captured shouldNotContain absentHost
+            extractionList.captured shouldNotContain absentHost
         }
     }
 }
