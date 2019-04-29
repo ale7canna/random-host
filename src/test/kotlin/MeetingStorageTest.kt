@@ -12,7 +12,7 @@ class MeetingStorageTest : StringSpec() {
     init {
         "Meeting can be stored" {
             val meeting = Meeting(
-                HostList(mockk(), listOf(Host("name", "surname", present = true))),
+                listOf(Host("name", "surname", present = true)),
                 "meeting name",
                 "meeting location",
                 LocalDateTime.of(2019, 4, 29, 19, 0)
@@ -26,16 +26,6 @@ class MeetingStorageTest : StringSpec() {
                       "present": true
                     }
                   ],
-                  "hostList": {
-                    "randomize": {},
-                    "hostList": [
-                      {
-                        "name": "name",
-                        "surname": "surname",
-                        "present": true
-                      }
-                    ]
-                  },
                   "meetingName": "meeting name",
                   "location": "meeting location",
                   "startTime": {

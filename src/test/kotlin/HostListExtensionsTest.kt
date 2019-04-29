@@ -4,44 +4,43 @@ import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.mockk.*
 
-class HostListTest : StringSpec() {
+class HostListExtensionsTest : StringSpec() {
     init {
         val slot = slot<List<IHost>>()
         val random = mockk<IRandomize>()
         every { random.draw(list = capture(slot)) } answers { slot.captured.first() }
 
-        val sut = HostList(random, defaultHostList())
+        val sut = defaultHostList()
 
         "Empty list should return no host" {
-            val localSut = HostList(random, emptyList())
+            val localSut = emptyList<Host>()
 
-            val result = localSut.drawHost()
+            val result = localSut.drawHost(random)
 
             result.shouldBeTypeOf<NoHost>()
         }
 
         "List should return an host" {
-            val localSut = HostList(random, listOf(Host("name", "surname")))
+            val localSut = listOf(Host("name", "surname"))
 
-            val result = localSut.drawHost()
+            val result = localSut.drawHost(random)
 
             result shouldBe Host("name", "surname")
         }
 
         "Draw operation should be randomized" {
-            sut.drawHost()
+            sut.drawHost(random)
 
             verify { random.draw(any()) }
             confirmVerified(random)
         }
 
         "Absent host can't be extracted" {
-            val list = defaultHostList() + Host("name", "surname", false)
-            val localSut = HostList(random, list)
+            val localSut = defaultHostList() + Host("name", "surname", false)
             val calledList = slot<List<Host>>()
             every { random.draw(capture(calledList)) } answers { calledList.captured.first() }
 
-            localSut.drawHost()
+            localSut.drawHost(random)
 
             calledList.captured.filter { !it.present } shouldBe emptyList()
         }

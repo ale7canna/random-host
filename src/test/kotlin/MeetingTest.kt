@@ -1,5 +1,4 @@
 import ale7canna.randomhost.Host
-import ale7canna.randomhost.HostList
 import ale7canna.randomhost.IRandomize
 import ale7canna.randomhost.Meeting
 import io.kotlintest.matchers.collections.shouldContain
@@ -19,11 +18,10 @@ class MeetingTest : StringSpec() {
         val extractionList = slot<List<Host>>()
         every { random.draw(capture(extractionList)) } answers { extractionList.captured.first() }
 
-        val hostList = HostList(random, defaultHostList())
-        val sut = Meeting(hostList)
+        val sut = Meeting(defaultHostList())
 
         "Meeting can appoint a random Host" {
-            val result = sut.appointHost()
+            val result = sut.extractHost(random)
 
             result should {
                 it.name shouldNotBe null
@@ -32,16 +30,16 @@ class MeetingTest : StringSpec() {
         }
 
         "Can't make a Meeting if no host is available" {
-            val localSut = Meeting(HostList(random, emptyList()))
+            val localSut = Meeting(emptyList())
 
-            shouldThrow<Exception> { localSut.appointHost() }
+            shouldThrow<Exception> { localSut.extractHost(random) }
         }
 
         "Can add a participant to a Meeting" {
             val hostToAdd = Host("new host name", "new host surname", true)
 
             val meetingWithNewHost = sut.addHost(hostToAdd)
-            meetingWithNewHost.appointHost()
+            meetingWithNewHost.extractHost(random)
 
             extractionList.captured shouldContain hostToAdd
         }
@@ -50,7 +48,7 @@ class MeetingTest : StringSpec() {
             val absentHost = Host("absent", "host", present = false)
             val meetingWithAbsentHost = sut.addHost(absentHost)
 
-            meetingWithAbsentHost.appointHost()
+            meetingWithAbsentHost.extractHost(random)
 
             extractionList.captured shouldNotContain absentHost
         }
