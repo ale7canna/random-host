@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    compile("com.github.salomonbrys.kotson:kotson:2.5.0")
 }
 
 dependencies {

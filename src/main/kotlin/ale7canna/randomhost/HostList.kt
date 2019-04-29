@@ -1,6 +1,6 @@
 package ale7canna.randomhost
 
-class HostList(private val randomize: IRandomize, private val hostList: List<Host>) {
+data class HostList(private val randomize: IRandomize, val hostList: List<Host>) {
 
     fun drawHost(): IHost =
         when (hostList.count()) {
