@@ -36,7 +36,7 @@ class HostListTest : StringSpec() {
         }
 
         "Absent host can't be extracted" {
-            val list = defaultHostList() + Host("ciao", "ciao", false)
+            val list = defaultHostList() + Host("name", "surname", false)
             val localSut = HostList(random, list)
             val calledList = slot<List<Host>>()
             every { random.draw(capture(calledList)) } answers { calledList.captured.first() }

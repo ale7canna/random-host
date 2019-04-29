@@ -3,6 +3,7 @@ import ale7canna.randomhost.HostList
 import ale7canna.randomhost.IRandomize
 import ale7canna.randomhost.Meeting
 import io.kotlintest.matchers.collections.shouldContain
+import io.kotlintest.matchers.collections.shouldNotContain
 import io.kotlintest.should
 import io.kotlintest.shouldNotBe
 import io.kotlintest.shouldThrow
@@ -38,13 +39,25 @@ class MeetingTest : StringSpec() {
 
         "Can add a participant to a Meeting" {
             val hostToAdd = Host("new host name", "new host surname", true)
-            val slotList = slot<List<Host>>()
-            every { random.draw(capture(slotList)) } answers {slotList.captured.first()}
+            val list = slot<List<Host>>()
+            every { random.draw(capture(list)) } answers {list.captured.first()}
 
             val meetingWithNewHost = sut.addHost(hostToAdd)
             meetingWithNewHost.appointHost()
 
-            slotList.captured shouldContain Host("new host name", "new host surname", true)
+            list.captured shouldContain Host("new host name", "new host surname", true)
+        }
+
+        "Meeting can have an absent participant" {
+            val absentHost = Host("absent", "host", present = false)
+            val meetingWithAbsentHost = sut.addHost(absentHost)
+
+            val availableHosts = slot<List<Host>>()
+            every { random.draw(capture(availableHosts)) } answers { availableHosts.captured.first() }
+
+            meetingWithAbsentHost.appointHost()
+
+            availableHosts.captured shouldNotContain absentHost
         }
     }
 }
