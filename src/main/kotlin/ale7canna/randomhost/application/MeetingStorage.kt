@@ -1,10 +1,11 @@
-package ale7canna.randomhost
+package ale7canna.randomhost.application
 
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
-class MeetingStorage(private val persistence: IPersistence) : IStorage<Meeting> {
+class MeetingStorage(private val persistence: IPersistence) :
+    IStorage<Meeting> {
     override fun restoreLatest(): Meeting =
         Gson().fromJson(persistence.loadLatest())
 

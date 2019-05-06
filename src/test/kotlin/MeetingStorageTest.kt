@@ -1,4 +1,7 @@
-import ale7canna.randomhost.*
+import ale7canna.randomhost.application.Host
+import ale7canna.randomhost.application.IPersistence
+import ale7canna.randomhost.application.Meeting
+import ale7canna.randomhost.application.MeetingStorage
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.mockk.confirmVerified

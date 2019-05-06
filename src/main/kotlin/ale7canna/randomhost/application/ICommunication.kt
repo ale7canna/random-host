@@ -1,6 +1,4 @@
-package ale7canna.randomhost
-
-import java.time.LocalDateTime
+package ale7canna.randomhost.application
 
 interface ICommunication {
     fun<T> askInput(message: String): T

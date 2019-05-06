@@ -1,6 +1,6 @@
-import ale7canna.randomhost.Host
-import ale7canna.randomhost.IRandomize
-import ale7canna.randomhost.Meeting
+import ale7canna.randomhost.application.Host
+import ale7canna.randomhost.application.IRandomize
+import ale7canna.randomhost.application.Meeting
 import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldNotContain
 import io.kotlintest.should

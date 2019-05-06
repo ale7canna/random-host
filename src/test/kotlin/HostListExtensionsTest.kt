@@ -1,4 +1,4 @@
-import ale7canna.randomhost.*
+import ale7canna.randomhost.application.*
 import io.kotlintest.matchers.types.shouldBeTypeOf
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec

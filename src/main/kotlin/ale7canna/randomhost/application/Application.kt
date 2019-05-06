@@ -1,4 +1,4 @@
-package ale7canna.randomhost
+package ale7canna.randomhost.application
 
 class Application(
     private val communication: ICommunication,

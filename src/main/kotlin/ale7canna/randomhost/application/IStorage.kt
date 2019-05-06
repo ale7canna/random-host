@@ -1,4 +1,4 @@
-package ale7canna.randomhost
+package ale7canna.randomhost.application
 
 interface IStorage<TData> {
     fun store(data: TData)

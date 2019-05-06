@@ -1,4 +1,4 @@
-package ale7canna.randomhost
+package ale7canna.randomhost.application
 
 interface IPersistence {
     fun save(data: String)
