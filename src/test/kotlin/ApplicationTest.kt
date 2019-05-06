@@ -1,20 +1,23 @@
 import ale7canna.randomhost.application.*
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import java.time.LocalDateTime
 import java.time.Month
 
 class ApplicationTest : StringSpec() {
     init {
         val communication: ICommunication = mockk()
-        val storage: IStorage<Meeting> = mockk()
-
         every { communication.askForHosts() } answers { defaultHostList() }
         every { communication.askForName() } answers { "some name" }
         every { communication.askForLocation() } answers { "some location" }
         every { communication.askForDateTime() } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
+
+        val storage: IStorage<Meeting> = mockk()
+        every { storage.store(any()) } answers { }
 
         val sut = Application(communication, storage)
 
@@ -54,6 +57,14 @@ class ApplicationTest : StringSpec() {
                 "some location",
                 LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0)
             )
+        }
+
+        "Application can store Meetings" {
+            val meeting = Meeting(defaultHostList())
+
+            sut.saveMeeting(meeting)
+
+            verify { storage.store(any()) }
         }
     }
 }

@@ -20,4 +20,8 @@ class Application(
             communication.askForLocation(),
             communication.askForDateTime()
         )
+
+    fun saveMeeting(meeting: Meeting) {
+        storage.store(meeting)
+    }
 }
