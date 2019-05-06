@@ -1,10 +1,10 @@
 import ale7canna.randomhost.application.*
+import io.kotlintest.matchers.collections.shouldBeOneOf
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldNot
+import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.StringSpec
-import io.mockk.confirmVerified
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import java.time.LocalDateTime
 import java.time.Month
 
@@ -15,11 +15,16 @@ class ApplicationTest : StringSpec() {
         every { communication.askForName() } answers { "some name" }
         every { communication.askForLocation() } answers { "some location" }
         every { communication.askForDateTime() } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
+        every { communication.showExtractedHost(any()) } answers { }
 
         val storage: IStorage<Meeting> = mockk()
         every { storage.store(any()) } answers { }
 
-        val sut = Application(communication, storage)
+        val randomize: IRandomize = mockk()
+        val capturingSlot = slot<List<Host>>()
+        every { randomize.draw(capture(capturingSlot)) } answers { capturingSlot.captured.first() }
+
+        val sut = Application(communication, storage, randomize)
 
         "Application creates a meeting with input from the communication port" {
             val result = sut.createMeeting()
@@ -65,6 +70,14 @@ class ApplicationTest : StringSpec() {
             sut.saveMeeting(meeting)
 
             verify { storage.store(any()) }
+        }
+
+        "Application can extract an host for the current meeting" {
+            val meeting = Meeting(defaultHostList())
+
+            sut.extractHost(meeting)
+
+            verify { communication.showExtractedHost(any()) }
         }
     }
 }

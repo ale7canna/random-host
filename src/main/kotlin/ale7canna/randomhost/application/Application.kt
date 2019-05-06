@@ -2,8 +2,10 @@ package ale7canna.randomhost.application
 
 class Application(
     private val communication: ICommunication,
-    private val storage: IStorage<Meeting>
+    private val storage: IStorage<Meeting>,
+    private val randomize: IRandomize
 ) {
+    var latestMeeting = Meeting(emptyList())
 
     fun createMeeting(): Meeting =
         Meeting(
@@ -24,4 +26,7 @@ class Application(
     fun saveMeeting(meeting: Meeting) {
         storage.store(meeting)
     }
+
+    fun extractHost(meeting: Meeting): Unit =
+        communication.showExtractedHost(meeting.extractHost(randomize))
 }

@@ -7,4 +7,5 @@ interface ICommunication {
     fun askForName(): String
     fun askForLocation(): String
     fun askForDateTime(): LocalDateTime
+    fun showExtractedHost(host: Host)
 }
