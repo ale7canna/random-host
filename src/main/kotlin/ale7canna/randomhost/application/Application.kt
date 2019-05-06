@@ -7,17 +7,17 @@ class Application(
 
     fun createMeeting(): Meeting =
         Meeting(
-            communication.askInput("Insert hosts"),
-            communication.askInput("Insert name"),
-            communication.askInput("Insert location"),
-            communication.askInput("Insert time")
+            communication.askForHosts(),
+            communication.askForName(),
+            communication.askForLocation(),
+            communication.askForDateTime()
         )
 
     fun createMeetingUsingLatestParticipants(): Meeting =
         Meeting(
             storage.restoreLatest().hosts,
-            communication.askInput("Insert name"),
-            communication.askInput("Insert location"),
-            communication.askInput("Insert time")
+            communication.askForName(),
+            communication.askForLocation(),
+            communication.askForDateTime()
         )
 }

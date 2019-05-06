@@ -6,19 +6,15 @@ import io.mockk.mockk
 import java.time.LocalDateTime
 import java.time.Month
 
-class ApplicationTest: StringSpec() {
+class ApplicationTest : StringSpec() {
     init {
         val communication: ICommunication = mockk()
         val storage: IStorage<Meeting> = mockk()
 
-        every { communication.askInput<List<Host>>("Insert hosts")
-        } answers { defaultHostList() }
-        every { communication.askInput<String>("Insert name")
-        } answers { "some name" }
-        every { communication.askInput<String>("Insert location")
-        } answers { "some location" }
-        every { communication.askInput<LocalDateTime>("Insert time")
-        } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
+        every { communication.askForHosts() } answers { defaultHostList() }
+        every { communication.askForName() } answers { "some name" }
+        every { communication.askForLocation() } answers { "some location" }
+        every { communication.askForDateTime() } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
 
         val sut = Application(communication, storage)
 
