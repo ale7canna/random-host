@@ -20,10 +20,12 @@ data class Meeting(
         )
 }
 
-fun List<Host>.drawHost(randomize: IRandomize): IHost =
-    when (this.count()) {
+fun List<Host>.drawHost(randomize: IRandomize): IHost {
+    val hosts = this.filter { it.present }
+    return when (hosts.count()) {
         0 -> NoHost()
-        else -> randomize.draw(this.filter { it.present })
+        else -> randomize.draw(hosts)
     }
+}
 
 fun List<Host>.add(hostToAdd: Host): List<Host> = this + hostToAdd
