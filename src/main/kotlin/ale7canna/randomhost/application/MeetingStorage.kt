@@ -5,10 +5,13 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 class MeetingStorage(private val persistence: IPersistence) :
-    IStorage<Meeting> {
-    override fun restoreLatest(): Meeting =
-        Gson().fromJson(persistence.loadLatest())
+    IStorage<Meeting?> {
+    override fun restoreLatest(): Meeting? =
+        when (val data = persistence.loadLatest()) {
+            "" -> null
+            else -> Gson().fromJson(data)
+        }
 
-    override fun store(data: Meeting) =
+    override fun store(data: Meeting?) =
         persistence.save(GsonBuilder().setPrettyPrinting().create().toJson(data))
 }

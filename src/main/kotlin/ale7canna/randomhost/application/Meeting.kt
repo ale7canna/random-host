@@ -8,11 +8,8 @@ data class Meeting(
     val location: String = "location",
     val startTime: LocalDateTime = LocalDateTime.now()
 ) {
-    fun extractHost(randomize: IRandomize): Host =
-        when (val host = hosts.drawHost(randomize)) {
-            is NoHost -> throw Exception("Can't make Meeting without any Host")
-            else -> host as Host
-        }
+    fun extractHost(randomize: IRandomize): IHost =
+        hosts.drawHost(randomize)
 
     fun addHost(hostToAdd: Host): Meeting =
         Meeting(

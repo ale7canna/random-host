@@ -12,7 +12,7 @@ class FileSystemPersistence(
     init {
         val path = Paths.get(directoryPath)
         if (Files.notExists(path))
-            Files.createDirectory(path)
+            Files.createDirectories(path)
     }
 
     override fun save(data: String) =
@@ -20,10 +20,11 @@ class FileSystemPersistence(
             .writeText(data)
 
     override fun loadLatest(): String {
-        return File("$directoryPath/*.json")
+        return File(directoryPath)
             .walkTopDown()
+            .filter { it.extension == "json" }
             .sortedBy { it.lastModified() }
-            .first()
+            .first()!!
             .readText()
     }
 }

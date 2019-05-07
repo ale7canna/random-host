@@ -8,4 +8,5 @@ interface ICommunication {
     fun askForLocation(): String
     fun askForDateTime(): LocalDateTime
     fun showExtractedHost(host: Host)
+    fun show(message: String)
 }

@@ -95,5 +95,14 @@ class MeetingStorageTest : StringSpec() {
 
             meeting shouldBe expectedMeeting
         }
+
+        "Cannot restore meeting with empty data" {
+            val jsonMeeting = ""
+            every { persistence.loadLatest() } answers { jsonMeeting }
+
+            val meeting = sut.restoreLatest()
+
+            meeting shouldBe null
+        }
     }
 }

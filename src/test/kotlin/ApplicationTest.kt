@@ -1,8 +1,5 @@
 import ale7canna.randomhost.application.*
-import io.kotlintest.matchers.collections.shouldBeOneOf
 import io.kotlintest.shouldBe
-import io.kotlintest.shouldNot
-import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.StringSpec
 import io.mockk.*
 import java.time.LocalDateTime
@@ -17,19 +14,24 @@ class ApplicationTest : StringSpec() {
         every { communication.askForDateTime() } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
         every { communication.showExtractedHost(any()) } answers { }
 
-        val storage: IStorage<Meeting> = mockk()
+        val storage: IStorage<Meeting?> = mockk()
         every { storage.store(any()) } answers { }
 
         val randomize: IRandomize = mockk()
         val capturingSlot = slot<List<Host>>()
         every { randomize.draw(capture(capturingSlot)) } answers { capturingSlot.captured.first() }
 
-        val sut = Application(communication, storage, randomize)
+        val sut = Application(communication, storage, randomize, Meeting(
+            defaultHostList(),
+            "first meeting",
+            "first location",
+            LocalDateTime.of(2019, Month.MAY, 3, 19, 5, 0)
+        ))
 
         "Application creates a meeting with input from the communication port" {
             val result = sut.createMeeting()
 
-            result shouldBe Meeting(
+            result.currentMeeting shouldBe Meeting(
                 defaultHostList(),
                 "some name",
                 "some location",
@@ -51,7 +53,7 @@ class ApplicationTest : StringSpec() {
 
             val result = sut.createMeetingUsingLatestParticipants()
 
-            result shouldBe Meeting(
+            result.currentMeeting shouldBe Meeting(
                 listOf(
                     Host("name1", "surname1", true),
                     Host("name2", "surname2", false),
@@ -65,17 +67,13 @@ class ApplicationTest : StringSpec() {
         }
 
         "Application can store Meetings" {
-            val meeting = Meeting(defaultHostList())
-
-            sut.saveMeeting(meeting)
+            sut.saveMeeting()
 
             verify { storage.store(any()) }
         }
 
-        "Application can extract an host for the current meeting" {
-            val meeting = Meeting(defaultHostList())
-
-            sut.extractHost(meeting)
+        "Application can extract an host for the currentMeeting meeting" {
+            sut.extractHost()
 
             verify { communication.showExtractedHost(any()) }
         }

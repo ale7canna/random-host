@@ -1,11 +1,11 @@
 import ale7canna.randomhost.application.Host
 import ale7canna.randomhost.application.IRandomize
 import ale7canna.randomhost.application.Meeting
+import ale7canna.randomhost.application.NoHost
 import io.kotlintest.matchers.collections.shouldContain
 import io.kotlintest.matchers.collections.shouldNotContain
-import io.kotlintest.should
-import io.kotlintest.shouldNotBe
-import io.kotlintest.shouldThrow
+import io.kotlintest.matchers.types.shouldBeTypeOf
+import io.kotlintest.matchers.types.shouldNotBeTypeOf
 import io.kotlintest.specs.StringSpec
 import io.mockk.every
 import io.mockk.mockk
@@ -23,16 +23,15 @@ class MeetingTest : StringSpec() {
         "Meeting can appoint a random Host" {
             val result = sut.extractHost(random)
 
-            result should {
-                it.name shouldNotBe null
-                it.surname shouldNotBe null
-            }
+            result.shouldNotBeTypeOf<NoHost>()
         }
 
         "Can't make a Meeting if no host is available" {
             val localSut = Meeting(emptyList())
 
-            shouldThrow<Exception> { localSut.extractHost(random) }
+            val result = localSut.extractHost(random)
+
+            result.shouldBeTypeOf<NoHost>()
         }
 
         "Can add a participant to a Meeting" {
