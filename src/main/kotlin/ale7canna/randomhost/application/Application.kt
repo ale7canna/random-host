@@ -13,7 +13,8 @@ open class Application(
         Pair(1, CreateMeeting()),
         Pair(2, SaveMeeting()),
         Pair(3, CreateMeetingUsingParticipantFromLatest()),
-        Pair(4, ExtractHost())
+        Pair(4, ExtractHost()),
+        Pair(5, DeleteMeeting())
     )
 
     fun createMeeting(): Application =
@@ -62,6 +63,8 @@ open class Application(
             }
         }
     }
+
+    fun delete(): EmptyApplication = empty()
 
     private fun askForOperation(): IOperation {
         communication.show("Select available operation:")

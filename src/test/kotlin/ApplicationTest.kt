@@ -1,4 +1,5 @@
 import ale7canna.randomhost.application.*
+import io.kotlintest.matchers.types.shouldBeTypeOf
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.mockk.*
@@ -76,6 +77,12 @@ class ApplicationTest : StringSpec() {
             sut.extractHost()
 
             verify { communication.showExtractedHost(any()) }
+        }
+
+        "Application can delete current Meeting" {
+            val result = sut.delete()
+
+            result.shouldBeTypeOf<EmptyApplication>()
         }
     }
 }
