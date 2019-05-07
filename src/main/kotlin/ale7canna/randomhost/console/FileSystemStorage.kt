@@ -23,7 +23,7 @@ class FileSystemPersistence(
         return File(directoryPath)
             .walkTopDown()
             .filter { it.extension == "json" }
-            .sortedBy { it.lastModified() }
+            .sortedByDescending { it.lastModified() }
             .firstOrNull()
             ?.readText()
     }
