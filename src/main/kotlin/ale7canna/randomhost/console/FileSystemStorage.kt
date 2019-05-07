@@ -19,12 +19,12 @@ class FileSystemPersistence(
         File("$directoryPath/${LocalDateTime.now()}.json")
             .writeText(data)
 
-    override fun loadLatest(): String {
+    override fun loadLatest(): String? {
         return File(directoryPath)
             .walkTopDown()
             .filter { it.extension == "json" }
             .sortedBy { it.lastModified() }
-            .first()!!
-            .readText()
+            .firstOrNull()
+            ?.readText()
     }
 }

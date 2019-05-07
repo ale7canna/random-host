@@ -8,6 +8,7 @@ class MeetingStorage(private val persistence: IPersistence) :
     IStorage<Meeting?> {
     override fun restoreLatest(): Meeting? =
         when (val data = persistence.loadLatest()) {
+            null -> null
             "" -> null
             else -> Gson().fromJson(data)
         }
