@@ -2,10 +2,10 @@ package ale7canna.randomhost.application.operations
 
 import ale7canna.randomhost.application.Application
 
-class EditHostList : IMeetingOperation {
+class EditMeeting : IMeetingOperation {
     override val description: String
-        get() = "Edit the current meeting host list"
+        get() = "Edit the current meeting"
 
     override fun exec(application: Application): Application =
-        application.editHostList()
+        application.editCurrentMeeting()
 }

@@ -9,21 +9,21 @@ class ConsoleCommunication : ICommunication {
     override fun show(message: String) =
         println(message)
 
-    override fun showExtractedHost(host: Host) =
+    override fun showHost(host: Host) =
         println(host.toString())
 
     override fun askForHosts(currentHosts: List<Host>): List<Host> =
         askTo("Insert Hosts (current ones: $currentHosts)").and().returnsHosts(currentHosts)
 
-    override fun askForName(): String =
-        askTo("Insert meeting name").and().read()
+    override fun askForName(currentMeetingName: String): String =
+        askTo("Insert meeting name (current: $currentMeetingName)").and().read(currentMeetingName)
 
-    override fun askForLocation(): String =
-        askTo("Insert meeting location").and().read()
+    override fun askForLocation(currentLocation: String): String =
+        askTo("Insert meeting location (current: $currentLocation)").and().read(currentLocation)
 
-    override fun askForDateTime(): LocalDateTime =
-        askTo("Insert date and time (dd/MM/yy hh:mm). Leave empty to use the current time.")
-            .and().readDateTime()
+    override fun askForDateTime(currentStartTime: LocalDateTime): LocalDateTime =
+        askTo("Insert date and time (dd/MM/yy hh:mm). Leave empty to use the current time. (Current: $currentStartTime)")
+            .and().readDateTime(currentStartTime)
 }
 
 private fun askTo(message: String) {
@@ -49,12 +49,16 @@ private fun askForHost(): Host =
 private fun Unit.and(): Unit = this
 
 @Suppress("unused")
-private fun Unit.read(): String =
-    readLine()!!
+private fun Unit.read(currentValue: String = ""): String =
+    when (val value = readLine()){
+        null, "" -> currentValue
+        else -> value
+    }
+
 
 @Suppress("unused")
-fun Unit.readDateTime(): LocalDateTime =
+fun Unit.readDateTime(currentStartTime: LocalDateTime): LocalDateTime =
     when (val date = readLine()) {
-        "" -> LocalDateTime.now()
+        null, "" -> if (currentStartTime == LocalDateTime.MIN) LocalDateTime.now() else currentStartTime
         else -> LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd/MM/yy HH:mm"))
     }

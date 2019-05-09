@@ -4,9 +4,9 @@ import java.time.LocalDateTime
 
 data class Meeting(
     val hosts: List<Host>,
-    val meetingName: String = "meeting",
-    val location: String = "location",
-    val startTime: LocalDateTime = LocalDateTime.now()
+    val meetingName: String = "",
+    val location: String = "",
+    val startTime: LocalDateTime = LocalDateTime.MIN
 ) {
     fun extractHost(randomize: IRandomize): IHost =
         hosts.drawHost(randomize)

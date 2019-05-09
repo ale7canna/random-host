@@ -15,15 +15,15 @@ open class Application(
         Pair(3, CreateMeetingUsingParticipantFromLatest()),
         Pair(4, ExtractHost()),
         Pair(5, DeleteMeeting()),
-        Pair(6, EditHostList())
+        Pair(6, EditMeeting())
     )
 
     fun createMeeting(): Application =
         newFromMeeting(Meeting(
             communication.askForHosts(currentMeeting.hosts),
-            communication.askForName(),
-            communication.askForLocation(),
-            communication.askForDateTime()
+            communication.askForName(currentMeeting.meetingName),
+            communication.askForLocation(currentMeeting.location),
+            communication.askForDateTime(currentMeeting.startTime)
         ))
 
     fun createMeetingUsingLatestParticipants(): Application {
@@ -35,9 +35,9 @@ open class Application(
             }
             else -> newFromMeeting(Meeting(
                 latest.hosts,
-                communication.askForName(),
-                communication.askForLocation(),
-                communication.askForDateTime()
+                communication.askForName(currentMeeting.meetingName),
+                communication.askForLocation(currentMeeting.location),
+                communication.askForDateTime(currentMeeting.startTime)
             ))
         }
     }
@@ -51,7 +51,7 @@ open class Application(
         this.apply {
             when (val host = currentMeeting.extractHost(randomize))
             {
-                is Host -> communication.showExtractedHost(host)
+                is Host -> communication.showHost(host)
                 else -> communication.show("No host is available for the extraction")
             }
         }
@@ -67,12 +67,12 @@ open class Application(
 
     fun delete(): EmptyApplication = empty()
 
-    fun editHostList(): Application =
+    fun editCurrentMeeting(): Application =
         newFromMeeting(Meeting(
             communication.askForHosts(currentMeeting.hosts),
-            currentMeeting.meetingName,
-            currentMeeting.location,
-            currentMeeting.startTime
+            communication.askForName(currentMeeting.meetingName),
+            communication.askForLocation(currentMeeting.location),
+            communication.askForDateTime(currentMeeting.startTime)
         ))
 
     private fun askForOperation(): IOperation {

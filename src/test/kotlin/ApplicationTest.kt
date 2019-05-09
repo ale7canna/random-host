@@ -10,10 +10,10 @@ class ApplicationTest : StringSpec() {
     init {
         val communication: ICommunication = mockk()
         every { communication.askForHosts(emptyList()) } answers { defaultHostList() }
-        every { communication.askForName() } answers { "some name" }
-        every { communication.askForLocation() } answers { "some location" }
-        every { communication.askForDateTime() } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
-        every { communication.showExtractedHost(any()) } answers { }
+        every { communication.askForName(any()) } answers { "some name" }
+        every { communication.askForLocation(any()) } answers { "some location" }
+        every { communication.askForDateTime(any()) } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
+        every { communication.showHost(any()) } answers { }
 
         val storage: IStorage<Meeting?> = mockk()
         every { storage.store(any()) } answers { }
@@ -78,7 +78,7 @@ class ApplicationTest : StringSpec() {
         "Application can extract an host for the currentMeeting meeting" {
             sut.extractHost()
 
-            verify { communication.showExtractedHost(any()) }
+            verify { communication.showHost(any()) }
         }
 
         "Application can delete current Meeting" {
@@ -87,7 +87,7 @@ class ApplicationTest : StringSpec() {
             result.shouldBeTypeOf<EmptyApplication>()
         }
 
-        "Application can edit meeting host list" {
+        "Application can edit the meeting properties" {
             val localSut = Application(
                 communication,
                 storage,
@@ -104,17 +104,21 @@ class ApplicationTest : StringSpec() {
                     Host("added1", "added1", true),
                     Host("added2", "added2", false))
             }
+            every { communication.askForName("meeting") } answers { "new meeting name" }
+            every { communication.askForLocation("location") } answers { "new location" }
+            every { communication.askForDateTime(LocalDateTime.of(2019, 5, 9, 19, 30, 0)) } answers {
+                LocalDateTime.of(2019, 5, 9, 19, 45, 0) }
 
-            val result = localSut.editHostList()
+            val result = localSut.editCurrentMeeting()
 
             result.currentMeeting shouldBe Meeting(
                     listOf(
                         Host("host1", "host1", false),
                         Host("added1", "added1", true),
                         Host("added2", "added2", false)),
-                    "meeting",
-                    "location",
-                    LocalDateTime.of(2019, 5, 9, 19, 30, 0))
+                    "new meeting name",
+                    "new location",
+                    LocalDateTime.of(2019, 5, 9, 19, 45, 0))
         }
     }
 }
