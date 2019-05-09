@@ -12,8 +12,8 @@ class ConsoleCommunication : ICommunication {
     override fun showExtractedHost(host: Host) =
         println(host.toString())
 
-    override fun askForHosts(): List<Host> =
-        askTo("Insert Hosts").and().returnsHosts()
+    override fun askForHosts(currentHosts: List<Host>): List<Host> =
+        askTo("Insert Hosts (current ones: $currentHosts)").and().returnsHosts(currentHosts)
 
     override fun askForName(): String =
         askTo("Insert meeting name").and().read()
@@ -30,16 +30,11 @@ private fun askTo(message: String) {
     println(message)
 }
 
-@Suppress("unused")
-private fun Unit.returnsHosts(): List<Host> {
-    var result = emptyList<Host>()
-    var continueInsertion = askToContinue()
-    while (continueInsertion) {
-        result = result + askForHost()
-        continueInsertion = askToContinue()
+private fun Unit.returnsHosts(hosts: List<Host>): List<Host> =
+    when (askToContinue()) {
+        true -> returnsHosts(hosts + askForHost())
+        false -> hosts
     }
-    return result
-}
 
 private fun askToContinue(): Boolean =
     println("Want to add an host? (yes | no)").and().read() != "no"
@@ -63,4 +58,3 @@ fun Unit.readDateTime(): LocalDateTime =
         "" -> LocalDateTime.now()
         else -> LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd/MM/yy HH:mm"))
     }
-

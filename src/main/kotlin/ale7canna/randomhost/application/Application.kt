@@ -14,12 +14,13 @@ open class Application(
         Pair(2, SaveMeeting()),
         Pair(3, CreateMeetingUsingParticipantFromLatest()),
         Pair(4, ExtractHost()),
-        Pair(5, DeleteMeeting())
+        Pair(5, DeleteMeeting()),
+        Pair(6, EditHostList())
     )
 
     fun createMeeting(): Application =
         newFromMeeting(Meeting(
-            communication.askForHosts(),
+            communication.askForHosts(currentMeeting.hosts),
             communication.askForName(),
             communication.askForLocation(),
             communication.askForDateTime()
@@ -65,6 +66,14 @@ open class Application(
     }
 
     fun delete(): EmptyApplication = empty()
+
+    fun editHostList(): Application =
+        newFromMeeting(Meeting(
+            communication.askForHosts(currentMeeting.hosts),
+            currentMeeting.meetingName,
+            currentMeeting.location,
+            currentMeeting.startTime
+        ))
 
     private fun askForOperation(): IOperation {
         communication.show("Select available operation:")

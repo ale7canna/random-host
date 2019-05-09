@@ -3,7 +3,7 @@ package ale7canna.randomhost.application
 import java.time.LocalDateTime
 
 interface ICommunication {
-    fun askForHosts(): List<Host>
+    fun askForHosts(currentHosts: List<Host>): List<Host>
     fun askForName(): String
     fun askForLocation(): String
     fun askForDateTime(): LocalDateTime

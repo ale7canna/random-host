@@ -9,7 +9,7 @@ import java.time.Month
 class ApplicationTest : StringSpec() {
     init {
         val communication: ICommunication = mockk()
-        every { communication.askForHosts() } answers { defaultHostList() }
+        every { communication.askForHosts(emptyList()) } answers { defaultHostList() }
         every { communication.askForName() } answers { "some name" }
         every { communication.askForLocation() } answers { "some location" }
         every { communication.askForDateTime() } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
@@ -30,7 +30,9 @@ class ApplicationTest : StringSpec() {
         ))
 
         "Application creates a meeting with input from the communication port" {
-            val result = sut.createMeeting()
+            val localSut = EmptyApplication(communication, storage, randomize)
+
+            val result = localSut.createMeeting()
 
             result.currentMeeting shouldBe Meeting(
                 defaultHostList(),
@@ -83,6 +85,36 @@ class ApplicationTest : StringSpec() {
             val result = sut.delete()
 
             result.shouldBeTypeOf<EmptyApplication>()
+        }
+
+        "Application can edit meeting host list" {
+            val localSut = Application(
+                communication,
+                storage,
+                randomize,
+                Meeting(
+                    listOf(Host("host1", "host1", false)),
+                    "meeting",
+                    "location",
+                    LocalDateTime.of(2019, 5, 9, 19, 30, 0)
+                ))
+            every { communication.askForHosts(listOf(Host("host1", "host1", false))) } answers {
+                listOf(
+                    Host("host1", "host1", false),
+                    Host("added1", "added1", true),
+                    Host("added2", "added2", false))
+            }
+
+            val result = localSut.editHostList()
+
+            result.currentMeeting shouldBe Meeting(
+                    listOf(
+                        Host("host1", "host1", false),
+                        Host("added1", "added1", true),
+                        Host("added2", "added2", false)),
+                    "meeting",
+                    "location",
+                    LocalDateTime.of(2019, 5, 9, 19, 30, 0))
         }
     }
 }
