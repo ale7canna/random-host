@@ -1,4 +1,8 @@
 import ale7canna.randomhost.application.*
+import ale7canna.randomhost.application.operations.CreateMeeting
+import ale7canna.randomhost.application.operations.Exit
+import ale7canna.randomhost.application.operations.SaveMeeting
+import io.kotlintest.TestCase
 import io.kotlintest.matchers.types.shouldBeTypeOf
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
@@ -7,29 +11,20 @@ import java.time.LocalDateTime
 import java.time.Month
 
 class ApplicationTest : StringSpec() {
-    init {
-        val communication: ICommunication = mockk()
-        every { communication.askForHosts(emptyList()) } answers { defaultHostList() }
-        every { communication.askForName(any()) } answers { "some name" }
-        every { communication.askForLocation(any()) } answers { "some location" }
-        every { communication.askForDateTime(any()) } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
-        every { communication.showHost(any()) } answers { }
-        every { communication.show(any()) } answers { }
+    private val communication: ICommunication = mockk()
+    private val storage: IStorage<Meeting?> = mockk()
+    private val randomize: IRandomize = mockk()
 
-        val storage: IStorage<Meeting?> = mockk()
-        every { storage.store(any()) } answers { }
-
-        val randomize: IRandomize = mockk()
-        val capturingSlot = slot<List<Host>>()
-        every { randomize.draw(capture(capturingSlot)) } answers { capturingSlot.captured.first() }
-
-        val sut = Application(communication, storage, randomize, Meeting(
+    private val sut = Application(
+        communication, storage, randomize, Meeting(
             defaultHostList(),
             "first meeting",
             "first location",
             LocalDateTime.of(2019, Month.MAY, 3, 19, 5, 0)
-        ))
+        )
+    )
 
+    init {
         "Application creates a meeting with input from the communication port" {
             val localSut = EmptyApplication(communication, storage, randomize)
 
@@ -44,7 +39,7 @@ class ApplicationTest : StringSpec() {
         }
 
         "Application can create meeting using participants from the last meeting" {
-            every { storage.restoreLatest() } answers {
+            every { storage.restoreLatest() } returns
                 Meeting(
                     hosts = listOf(
                         Host("name1", "surname1", true),
@@ -53,7 +48,6 @@ class ApplicationTest : StringSpec() {
                         Host("name4", "surname4", true)
                     )
                 )
-            }
 
             val result = sut.createMeetingUsingLatestParticipants()
 
@@ -77,6 +71,9 @@ class ApplicationTest : StringSpec() {
         }
 
         "Application can extract an host for the currentMeeting meeting" {
+            val capturingSlot = slot<List<Host>>()
+            every { randomize.draw(capture(capturingSlot)) } answers { capturingSlot.captured.first() }
+
             sut.extractHost()
 
             verify { communication.showHost(any()) }
@@ -98,28 +95,31 @@ class ApplicationTest : StringSpec() {
                     "meeting",
                     "location",
                     LocalDateTime.of(2019, 5, 9, 19, 30, 0)
-                ))
-            every { communication.askForHosts(listOf(Host("host1", "host1", false))) } answers {
+                )
+            )
+            every { communication.askForHosts(listOf(Host("host1", "host1", false))) } returns
                 listOf(
                     Host("host1", "host1", false),
                     Host("added1", "added1", true),
-                    Host("added2", "added2", false))
-            }
-            every { communication.askForName("meeting") } answers { "new meeting name" }
-            every { communication.askForLocation("location") } answers { "new location" }
-            every { communication.askForDateTime(LocalDateTime.of(2019, 5, 9, 19, 30, 0)) } answers {
-                LocalDateTime.of(2019, 5, 9, 19, 45, 0) }
+                    Host("added2", "added2", false)
+                )
+            every { communication.askForName("meeting") } returns "new meeting name"
+            every { communication.askForLocation("location") } returns "new location"
+            every { communication.askForDateTime(LocalDateTime.of(2019, 5, 9, 19, 30, 0)) } returns
+                LocalDateTime.of(2019, 5, 9, 19, 45, 0)
 
             val result = localSut.editCurrentMeeting()
 
             result.currentMeeting shouldBe Meeting(
-                    listOf(
-                        Host("host1", "host1", false),
-                        Host("added1", "added1", true),
-                        Host("added2", "added2", false)),
-                    "new meeting name",
-                    "new location",
-                    LocalDateTime.of(2019, 5, 9, 19, 45, 0))
+                listOf(
+                    Host("host1", "host1", false),
+                    Host("added1", "added1", true),
+                    Host("added2", "added2", false)
+                ),
+                "new meeting name",
+                "new location",
+                LocalDateTime.of(2019, 5, 9, 19, 45, 0)
+            )
         }
 
         "Application can't perform extraction if no host is available" {
@@ -129,7 +129,8 @@ class ApplicationTest : StringSpec() {
                 randomize,
                 Meeting(
                     listOf(Host("name", "surname", false))
-            ))
+                )
+            )
 
             localSut.extractHost()
 
@@ -137,11 +138,44 @@ class ApplicationTest : StringSpec() {
         }
 
         "Application can't restore hosts if no previous meeting is available" {
-            every { storage.restoreLatest() } answers { null }
+            every { storage.restoreLatest() } returns null
 
             sut.createMeetingUsingLatestParticipants()
 
             verify { communication.show("Can't find any meeting to restore the participants from") }
         }
+
+        "Application interacts with user for choosing the operation" {
+            every { communication.askForOperation(any()) } returns Exit()
+
+            sut.run()
+
+            verify { communication.askForOperation(any()) }
+        }
+
+        "Application can perform many operations on a meeting" {
+            every { communication.askForOperation(any()) } returnsMany listOf(
+                CreateMeeting(),
+                SaveMeeting(),
+                Exit()
+            )
+
+            sut.run()
+
+            verify(exactly = 3) { communication.askForOperation(any()) }
+        }
+    }
+
+    override fun beforeTest(testCase: TestCase) {
+        clearAllMocks()
+
+        every { communication.askForHosts(emptyList()) } returns defaultHostList()
+        every { communication.askForName(any()) } returns "some name"
+        every { communication.askForLocation(any()) } returns "some location"
+        every { communication.askForDateTime(any()) } returns LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0)
+        every { communication.showHost(any()) } answers { }
+        every { communication.show(any()) } answers { }
+
+        every { storage.store(any()) } answers { }
     }
 }

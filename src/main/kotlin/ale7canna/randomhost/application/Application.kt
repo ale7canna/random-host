@@ -1,6 +1,7 @@
 package ale7canna.randomhost.application
 
 import ale7canna.randomhost.application.operations.*
+import java.time.LocalDateTime
 
 open class Application(
     private val communication: ICommunication,
@@ -19,26 +20,29 @@ open class Application(
     )
 
     fun createMeeting(): Application =
-        newFromMeeting(Meeting(
-            communication.askForHosts(currentMeeting.hosts),
-            communication.askForName(currentMeeting.meetingName),
-            communication.askForLocation(currentMeeting.location),
-            communication.askForDateTime(currentMeeting.startTime)
-        ))
+        newFromMeeting(
+            Meeting(
+                communication.askForHosts(emptyList()),
+                communication.askForName(""),
+                communication.askForLocation(""),
+                communication.askForDateTime(LocalDateTime.MIN)
+            )
+        )
 
     fun createMeetingUsingLatestParticipants(): Application {
-        return when (val latest = storage.restoreLatest())
-        {
+        return when (val latest = storage.restoreLatest()) {
             null -> {
                 communication.show("Can't find any meeting to restore the participants from")
                 return empty()
             }
-            else -> newFromMeeting(Meeting(
-                latest.hosts,
-                communication.askForName(currentMeeting.meetingName),
-                communication.askForLocation(currentMeeting.location),
-                communication.askForDateTime(currentMeeting.startTime)
-            ))
+            else -> newFromMeeting(
+                Meeting(
+                    latest.hosts,
+                    communication.askForName(currentMeeting.meetingName),
+                    communication.askForLocation(currentMeeting.location),
+                    communication.askForDateTime(currentMeeting.startTime)
+                )
+            )
         }
     }
 
@@ -49,8 +53,7 @@ open class Application(
 
     open fun extractHost(): Application =
         this.apply {
-            when (val host = currentMeeting.extractHost(randomize))
-            {
+            when (val host = currentMeeting.extractHost(randomize)) {
                 is Host -> communication.showHost(host)
                 else -> communication.show("No host is available for the extraction")
             }
@@ -67,20 +70,18 @@ open class Application(
 
     fun delete(): EmptyApplication = empty()
 
-    fun editCurrentMeeting(): Application =
-        newFromMeeting(Meeting(
-            communication.askForHosts(currentMeeting.hosts),
-            communication.askForName(currentMeeting.meetingName),
-            communication.askForLocation(currentMeeting.location),
-            communication.askForDateTime(currentMeeting.startTime)
-        ))
+    open fun editCurrentMeeting(): Application =
+        newFromMeeting(
+            Meeting(
+                communication.askForHosts(currentMeeting.hosts),
+                communication.askForName(currentMeeting.meetingName),
+                communication.askForLocation(currentMeeting.location),
+                communication.askForDateTime(currentMeeting.startTime)
+            )
+        )
 
-    private fun askForOperation(): IOperation {
-        communication.show("Select available operation:")
-        availableOperations.forEach { println("${it.key} - ${it.value.description}") }
-
-        return availableOperations[readLine()!!.toInt()]!!
-    }
+    private fun askForOperation(): IOperation =
+        communication.askForOperation(availableOperations)
 
     private fun perform(operation: IMeetingOperation): Application =
         operation.exec(this)

@@ -2,6 +2,7 @@ package ale7canna.randomhost.console
 
 import ale7canna.randomhost.application.Host
 import ale7canna.randomhost.application.ICommunication
+import ale7canna.randomhost.application.operations.IOperation
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -24,6 +25,10 @@ class ConsoleCommunication : ICommunication {
     override fun askForDateTime(currentStartTime: LocalDateTime): LocalDateTime =
         askTo("Insert date and time (dd/MM/yy hh:mm). Leave empty to use the current time. (Current: $currentStartTime)")
             .and().readDateTime(currentStartTime)
+
+    override fun askForOperation(operations: HashMap<Int, IOperation>): IOperation =
+        askTo("Select available operation:")
+            .and().readOperation(operations)
 }
 
 private fun askTo(message: String) {
@@ -55,10 +60,15 @@ private fun Unit.read(currentValue: String = ""): String =
         else -> value
     }
 
-
 @Suppress("unused")
 fun Unit.readDateTime(currentStartTime: LocalDateTime): LocalDateTime =
     when (val date = readLine()) {
         null, "" -> if (currentStartTime == LocalDateTime.MIN) LocalDateTime.now() else currentStartTime
         else -> LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd/MM/yy HH:mm"))
     }
+
+@Suppress("unused")
+fun Unit.readOperation(operations: HashMap<Int, IOperation>): IOperation {
+    operations.forEach { println("${it.key} - ${it.value.description}") }
+    return operations[readLine()!!.toInt()]!!
+}

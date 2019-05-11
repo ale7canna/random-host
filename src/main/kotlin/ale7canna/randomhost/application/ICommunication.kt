@@ -1,5 +1,6 @@
 package ale7canna.randomhost.application
 
+import ale7canna.randomhost.application.operations.IOperation
 import java.time.LocalDateTime
 
 interface ICommunication {
@@ -9,4 +10,5 @@ interface ICommunication {
     fun askForDateTime(currentStartTime: LocalDateTime): LocalDateTime
     fun showHost(host: Host)
     fun show(message: String)
+    fun askForOperation(operations: HashMap<Int, IOperation>): IOperation
 }

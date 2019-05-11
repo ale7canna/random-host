@@ -19,4 +19,9 @@ class EmptyApplication(
         communication.show("No meeting to extract the host from.")
         return this
     }
+
+    override fun editCurrentMeeting(): Application {
+        communication.show("No meeting to edit.")
+        return this
+    }
 }
