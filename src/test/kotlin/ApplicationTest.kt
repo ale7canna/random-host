@@ -14,6 +14,7 @@ class ApplicationTest : StringSpec() {
         every { communication.askForLocation(any()) } answers { "some location" }
         every { communication.askForDateTime(any()) } answers { LocalDateTime.of(2019, Month.MAY, 5, 19, 5, 0) }
         every { communication.showHost(any()) } answers { }
+        every { communication.show(any()) } answers { }
 
         val storage: IStorage<Meeting?> = mockk()
         every { storage.store(any()) } answers { }
@@ -119,6 +120,20 @@ class ApplicationTest : StringSpec() {
                     "new meeting name",
                     "new location",
                     LocalDateTime.of(2019, 5, 9, 19, 45, 0))
+        }
+
+        "Application can't perform extraction if no host is available" {
+            val localSut = Application(
+                communication,
+                storage,
+                randomize,
+                Meeting(
+                    listOf(Host("name", "surname", false))
+            ))
+
+            localSut.extractHost()
+
+            verify { communication.show("No host is available for the extraction") }
         }
     }
 }
