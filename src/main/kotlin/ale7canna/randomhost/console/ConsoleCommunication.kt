@@ -56,14 +56,14 @@ private fun askForHost(): Host =
     Host(
         println("Insert host name").and().read(),
         println("Insert host surname").and().read(),
-    println("Is host present? (yes | no)").and().read() == "yes"
-)
+        println("Is host present? (yes | no)").and().read() == "yes"
+    )
 
 private fun Unit.and(): Unit = this
 
 @Suppress("unused")
 private fun Unit.read(currentValue: String = ""): String =
-    when (val value = readLine()){
+    when (val value = readLine()) {
         null, "" -> currentValue
         else -> value
     }
@@ -78,5 +78,11 @@ fun Unit.readDateTime(currentStartTime: LocalDateTime): LocalDateTime =
 @Suppress("unused")
 fun Unit.readOperation(operations: HashMap<Int, IOperation>): IOperation {
     operations.forEach { println("${it.key} - ${it.value.description}") }
-    return operations[readLine()!!.toInt()]!!
+    val input = readLine()!!.toIntOrNull()
+    return if (operations.containsKey(input))
+        operations[input]!!
+    else {
+        println("Invalid input!")
+        readOperation(operations)
+    }
 }
