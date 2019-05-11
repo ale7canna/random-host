@@ -14,21 +14,29 @@ class ConsoleCommunication : ICommunication {
         println(host.toString())
 
     override fun askForHosts(currentHosts: List<Host>): List<Host> =
-        askTo("Insert Hosts (current ones: $currentHosts)").and().returnsHosts(currentHosts)
+        askTo("Insert Hosts${if (currentHosts.isEmpty()) "" else " (current ones: $currentHosts)"}")
+            .and()
+            .returnsHosts(currentHosts)
 
     override fun askForName(currentMeetingName: String): String =
-        askTo("Insert meeting name (current: $currentMeetingName)").and().read(currentMeetingName)
+        askTo("Insert meeting name${if (currentMeetingName == "") "" else " (current: $currentMeetingName). Empty to use current"}")
+            .and()
+            .read(currentMeetingName)
 
     override fun askForLocation(currentLocation: String): String =
-        askTo("Insert meeting location (current: $currentLocation)").and().read(currentLocation)
+        askTo("Insert meeting location${if (currentLocation == "") "" else " (current: $currentLocation). Empty to use current"}")
+            .and()
+            .read(currentLocation)
 
     override fun askForDateTime(currentStartTime: LocalDateTime): LocalDateTime =
-        askTo("Insert date and time (dd/MM/yy hh:mm). Leave empty to use the current time. (Current: $currentStartTime)")
-            .and().readDateTime(currentStartTime)
+        askTo("Insert date and time (dd/MM/yy hh:mm).${if (currentStartTime == LocalDateTime.MIN) " Empty to use the current time." else " (current: $currentStartTime). Empty to use current"}")
+            .and()
+            .readDateTime(currentStartTime)
 
     override fun askForOperation(operations: HashMap<Int, IOperation>): IOperation =
         askTo("Select available operation:")
-            .and().readOperation(operations)
+            .and()
+            .readOperation(operations)
 }
 
 private fun askTo(message: String) {
