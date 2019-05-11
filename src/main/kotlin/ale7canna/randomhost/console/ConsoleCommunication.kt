@@ -2,7 +2,7 @@ package ale7canna.randomhost.console
 
 import ale7canna.randomhost.application.Host
 import ale7canna.randomhost.application.ICommunication
-import ale7canna.randomhost.application.operations.IOperation
+import ale7canna.randomhost.console.operations.IOperation
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

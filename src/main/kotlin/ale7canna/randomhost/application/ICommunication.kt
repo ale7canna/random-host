@@ -1,6 +1,6 @@
 package ale7canna.randomhost.application
 
-import ale7canna.randomhost.application.operations.IOperation
+import ale7canna.randomhost.console.operations.IOperation
 import java.time.LocalDateTime
 
 interface ICommunication {

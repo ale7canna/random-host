@@ -1,6 +1,6 @@
 package ale7canna.randomhost.application
 
-import ale7canna.randomhost.application.operations.*
+import ale7canna.randomhost.console.operations.*
 import java.time.LocalDateTime
 
 open class Application(

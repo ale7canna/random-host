@@ -1,4 +1,4 @@
-package ale7canna.randomhost.application.operations
+package ale7canna.randomhost.console.operations
 
 import ale7canna.randomhost.application.Application
 

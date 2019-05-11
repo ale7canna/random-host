@@ -1,7 +1,7 @@
 import ale7canna.randomhost.application.*
-import ale7canna.randomhost.application.operations.CreateMeeting
-import ale7canna.randomhost.application.operations.Exit
-import ale7canna.randomhost.application.operations.SaveMeeting
+import ale7canna.randomhost.console.operations.CreateMeeting
+import ale7canna.randomhost.console.operations.Exit
+import ale7canna.randomhost.console.operations.SaveMeeting
 import io.kotlintest.TestCase
 import io.kotlintest.matchers.types.shouldBeTypeOf
 import io.kotlintest.shouldBe
