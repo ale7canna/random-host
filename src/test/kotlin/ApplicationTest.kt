@@ -135,5 +135,13 @@ class ApplicationTest : StringSpec() {
 
             verify { communication.show("No host is available for the extraction") }
         }
+
+        "Application can't restore hosts if no previous meeting is available" {
+            every { storage.restoreLatest() } answers { null }
+
+            sut.createMeetingUsingLatestParticipants()
+
+            verify { communication.show("Can't find any meeting to restore the participants from") }
+        }
     }
 }
