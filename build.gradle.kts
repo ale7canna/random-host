@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.21"
+    application
 }
 
 version = "1.0-SNAPSHOT"
@@ -27,4 +28,12 @@ tasks.withType<KotlinCompile> {
 
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
+}
+
+application {
+    mainClassName = "ale7canna.randomhost.console.MainKt"
+}
+
+val run by tasks.getting(JavaExec::class) {
+    standardInput = System.`in`
 }
